@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Limpid Recorder</title>
+    <link rel="stylesheet" href="index.css" />
+    <link href="./assets/bootstrap-5.3.0-alpha3-dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="./assets/bootstrap-5.3.0-alpha3-dist/js/bootstrap.bundle.min.js"></script>
+    <script defer src="./recondingController.js"></script>
+  </head>
+  <body class="container-fluid bg-black">
+    <div class="ratio ratio-16x9 p-0 m-0">
+      <video class="object-fit-contain"></video>
+    </div>
+
+    <div class="container-fluid p-2" align="center">
+      <button id="videoSelectBtn" class="btn btn-dark btn-sm">Choose a Video Source</button>
+
+      <div class="m-auto p-1" align="center">
+        <button id="startBtn" class="btn btn-primary btn-sm">Start</button>
+        <button id="pauseBtn" class="btn btn-warning btn-sm">Pause</button>
+        <button id="stopBtn" class="btn btn-danger btn-sm">Stop</button>
+      </div>
+    </div>
+  </body>
+</html>

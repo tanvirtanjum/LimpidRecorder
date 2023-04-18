@@ -1,35 +1,68 @@
 const { ipcRenderer } = require('electron')
-
 const desktopCapturer = {
   getSources: (opts) => ipcRenderer.invoke('DESKTOP_CAPTURER_GET_SOURCES', opts)
 }
-
 const remote = require('@electron/remote');
-
 const { writeFile } = require('fs');
-
 const { dialog, Menu } = remote;
 
 // Global state
 let mediaRecorder; // MediaRecorder instance to capture footage
-const recordedChunks = [];
+let recordedChunks = [];
+let tempChunks = [];
 
 // Buttons
 const videoElement = document.querySelector('video');
 
 const startBtn = document.getElementById('startBtn');
-startBtn.onclick = e => {
-  mediaRecorder.start();
-  startBtn.classList.add('is-danger');
-  startBtn.innerText = 'Recording';
+startBtn.onclick = e => { 
+  var state = startBtn.getAttribute('data-state')
+
+  if(state  == '0'){
+    try{
+      startBtn.classList.remove('btn-primary');
+      startBtn.classList.add('btn-success');
+      startBtn.setAttribute('data-state','1');
+      startBtn.firstElementChild.classList.remove('fa-circle-play');
+      startBtn.firstElementChild.classList.add('fa-record-vinyl');
+      mediaRecorder.start();
+      videoSelectBtn.disabled = true;
+    } catch (e) {
+      dialog.showErrorBox('Error', 'Select a window to record first.'); 
+      startBtn.classList.add('btn-primary');
+      startBtn.classList.remove('btn-success');
+      startBtn.setAttribute('data-state',state+'');
+      startBtn.firstElementChild.classList.add('fa-circle-play');
+      startBtn.firstElementChild.classList.remove('fa-record-vinyl');
+    }
+  } else if(state == '1') {
+    startBtn.classList.remove('btn-success');
+    startBtn.classList.add('btn-warning');
+    startBtn.setAttribute('data-state','2');
+    startBtn.firstElementChild.classList.remove('fa-record-vinyl');
+    startBtn.firstElementChild.classList.add('fa-circle-pause');
+    mediaRecorder.pause();
+  } else {
+    startBtn.classList.remove('btn-warning');
+    startBtn.classList.add('btn-success');
+    startBtn.setAttribute('data-state','1');
+    startBtn.firstElementChild.classList.remove('fa-circle-pause');
+    startBtn.firstElementChild.classList.add('fa-record-vinyl');
+    mediaRecorder.resume();
+  }
 };
 
 const stopBtn = document.getElementById('stopBtn');
-
 stopBtn.onclick = e => {
+  startBtn.classList.remove('btn-warning');
+  startBtn.classList.remove('btn-success');
+  startBtn.classList.add('btn-primary');
+  startBtn.setAttribute('data-state','0');
+  startBtn.firstElementChild.classList.remove('fa-circle-pause');
+  startBtn.firstElementChild.classList.remove('fa-record-vinyl');
+  startBtn.firstElementChild.classList.add('fa-circle-play');
+  videoSelectBtn.disabled = false;
   mediaRecorder.stop();
-  startBtn.classList.remove('is-danger');
-  startBtn.innerText = 'Start';
 };
 
 const videoSelectBtn = document.getElementById('videoSelectBtn');
@@ -70,8 +103,7 @@ async function selectSource(source) {
   };
 
   // Create a Stream
-  const stream = await navigator.mediaDevices
-    .getUserMedia(constraints);
+  const stream = await navigator.mediaDevices.getUserMedia(constraints);
 
   // Preview the source in a video element
   videoElement.srcObject = stream;
@@ -84,6 +116,8 @@ async function selectSource(source) {
   // Register Event Handlers
   mediaRecorder.ondataavailable = handleDataAvailable;
   mediaRecorder.onstop = handleStop;
+  mediaRecorder.onpause = handlePause;
+  mediaRecorder.onresume = handleResume;
 
   // Updates the UI
 }
@@ -91,6 +125,17 @@ async function selectSource(source) {
 // Captures all recorded chunks
 function handleDataAvailable(e) {
   console.log('video data available');
+  recordedChunks.push(e.data);
+}
+
+async function handlePause(e) {
+  tempChunks = recordedChunks;
+  recordedChunks = [];
+}
+
+async function handleResume(e) {
+  recordedChunks = tempChunks;
+  tempChunks = [];
   recordedChunks.push(e.data);
 }
 

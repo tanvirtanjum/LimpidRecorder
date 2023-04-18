@@ -7,19 +7,26 @@
     <link href="./assets/bootstrap-5.3.0-alpha3-dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="./assets/bootstrap-5.3.0-alpha3-dist/js/bootstrap.bundle.min.js"></script>
     <script defer src="./recondingController.js"></script>
+    <link rel="stylesheet" href="./assets/fontawesome-free-6.4.0-web/css/all.css">
+    <script src="./assets/fontawesome-free-6.4.0-web/js/all.js"></script>
   </head>
-  <body class="container-fluid bg-black">
+  <body class="container-fluid bg-black p-1">
     <div class="ratio ratio-16x9 p-0 m-0">
       <video class="object-fit-contain"></video>
     </div>
 
     <div class="container-fluid p-2" align="center">
-      <button id="videoSelectBtn" class="btn btn-dark btn-sm">Choose a Video Source</button>
-
+      
+      <small class="text-sm-end text-white">Recording Time: <small>--:--:--</small></small>
       <div class="m-auto p-1" align="center">
-        <button id="startBtn" class="btn btn-primary btn-sm">Start</button>
-        <button id="pauseBtn" class="btn btn-warning btn-sm">Pause</button>
-        <button id="stopBtn" class="btn btn-danger btn-sm">Stop</button>
+        <button id="videoSelectBtn" class="btn btn-dark btn-sm rounded">Choose a Video Source</button> 
+        <i class="fa-solid fa-grip-lines-vertical fa-xl" style="color: #ffffff;"></i>
+        <button id="startBtn" data-state="0" class="btn btn-primary btn-sm rounded-4">
+          <i class="fa-solid fa-circle-play"></i>
+        </button>
+        <button id="stopBtn" class="btn btn-danger btn-sm rounded-4">
+          <i class="fa-solid fa-circle-stop"></i>
+        </button>
       </div>
     </div>
   </body>
